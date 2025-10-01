@@ -4,7 +4,6 @@ import java.util.NoSuchElementException;
 
 public class ArrayList<T> implements List<T> {
     private static final int DEFAULT_CAPACITY = 10;
-
     private static final int GROWTH_FACTOR_NUMERATOR = 3;
     private static final int GROWTH_FACTOR_DENOMINATOR = 2;
 
@@ -74,7 +73,7 @@ public class ArrayList<T> implements List<T> {
         if (numMoved > 0) {
             System.arraycopy(elementData, index + 1, elementData, index, numMoved);
         }
-        elementData[--size] = null;
+        elementData[--size] = null; // help GC
         return old;
     }
 
