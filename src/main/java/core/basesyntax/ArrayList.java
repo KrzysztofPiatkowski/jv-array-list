@@ -1,10 +1,12 @@
 package core.basesyntax;
 
-import java.util.Arrays;
 import java.util.NoSuchElementException;
 
 public class ArrayList<T> implements List<T> {
     private static final int DEFAULT_CAPACITY = 10;
+
+    private static final int GROWTH_FACTOR_NUMERATOR = 3;
+    private static final int GROWTH_FACTOR_DENOMINATOR = 2;
 
     private Object[] elementData;
     private int size;
@@ -34,9 +36,18 @@ public class ArrayList<T> implements List<T> {
         if (list == null || list.isEmpty()) {
             return;
         }
+        if (list == this) {
+            int n = size;
+            ensureCapacity(size + n);
+            for (int i = 0; i < n; i++) {
+                elementData[size++] = get(i);
+            }
+            return;
+        }
 
-        ensureCapacity(size + list.size());
-        for (int i = 0; i < list.size(); i++) {
+        int n = list.size();
+        ensureCapacity(size + n);
+        for (int i = 0; i < n; i++) {
             elementData[size++] = list.get(i);
         }
     }
@@ -68,6 +79,7 @@ public class ArrayList<T> implements List<T> {
     }
 
     @Override
+    @SuppressWarnings("unchecked")
     public T remove(T element) {
         for (int i = 0; i < size; i++) {
             Object current = elementData[i];
@@ -103,11 +115,13 @@ public class ArrayList<T> implements List<T> {
 
     private void grow(int minCapacity) {
         int oldCap = elementData.length;
-        int newCap = oldCap + (oldCap >> 1);
+        int newCap = (int) (((long) oldCap * GROWTH_FACTOR_NUMERATOR) / GROWTH_FACTOR_DENOMINATOR);
         if (newCap < minCapacity) {
             newCap = minCapacity;
         }
-        elementData = Arrays.copyOf(elementData, newCap);
+        Object[] newArr = new Object[newCap];
+        System.arraycopy(elementData, 0, newArr, 0, size);
+        elementData = newArr;
     }
 
     private void checkElementIndex(int index) {
